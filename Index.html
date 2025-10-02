@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort Animation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ff9966;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .animation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .array-display {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .array-element {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            border-radius: 8px;
+            background: #4a86e8;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .array-element.comparing {
+            background: #ff9966;
+            color: #000;
+            transform: scale(1.2);
+            box-shadow: 0 0 15px #ff9966;
+        }
+        
+        .array-element.swapping {
+            background: #e67e22;
+            transform: translateY(10px);
+        }
+        
+        .array-element.sorted {
+            background: #2ecc71;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .code-container {
+            background: #2c3e50;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .code-line {
+            margin-bottom: 8px;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+            color: #ecf0f1;
+            white-space: pre;
+        }
+        
+        .code-line.active {
+            opacity: 1;
+            color: #ff9966;
+            font-weight: bold;
+        }
+        
+        .code-line.highlight {
+            background: rgba(255, 153, 102, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #4a86e8;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background: #3a76d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .explanation {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .indicators {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        
+        .indicator-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .comparing-color {
+            background: #ff9966;
+        }
+        
+        .swapping-color {
+            background: #e67e22;
+        }
+        
+        .sorted-color {
+            background: #2ecc71;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        input[type="range"] {
+            width: 250px;
+        }
+        
+        .algorithm-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .algorithm-info h3 {
+            color: #ff9966;
+            margin-bottom: 10px;
+        }
+        
+        .complexity {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .complexity-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            width: 30%;
+        }
+        
+        .complexity-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff9966;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bubble Sort Algorithm Animation</h1>
+        
+        <div class="animation-container">
+            <div class="array-display" id="arrayDisplay">
+                <!-- Array elements will be generated here -->
+            </div>
+            
+            <div class="indicators">
+                <div class="indicator">
+                    <div class="indicator-color comparing-color"></div>
+                    <span>Comparing</span>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-color swapping-color"></div>
+                    <span>Swapping</span>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-color sorted-color"></div>
+                    <span>Sorted</span>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-line" id="line1">#include &lt;iostream&gt;</div>
+                <div class="code-line" id="line2">using namespace std;</div>
+                <div class="code-line" id="line3"></div>
+                <div class="code-line" id="line4">void bubbleSort(int arr[], int n) {</div>
+                <div class="code-line" id="line5">    for (int i = 0; i < n-1; i++) {</div>
+                <div class="code-line" id="line6">        for (int j = 0; j < n-i-1; j++) {</div>
+                <div class="code-line" id="line7">            if (arr[j] > arr[j+1]) {</div>
+                <div class="code-line" id="line8">                // Swap elements</div>
+                <div class="code-line" id="line9">                int temp = arr[j];</div>
+                <div class="code-line" id="line10">                arr[j] = arr[j+1];</div>
+                <div class="code-line" id="line11">                arr[j+1] = temp;</div>
+                <div class="code-line" id="line12">            }</div>
+                <div class="code-line" id="line13">        }</div>
+                <div class="code-line" id="line14">    }</div>
+                <div class="code-line" id="line15">}</div>
+                <div class="code-line" id="line16"></div>
+                <div class="code-line" id="line17">int main() {</div>
+                <div class="code-line" id="line18">    int arr[] = {64, 34, 25, 12, 22, 11, 90};</div>
+                <div class="code-line" id="line19">    int n = sizeof(arr)/sizeof(arr[0]);</div>
+                <div class="code-line" id="line20">    </div>
+                <div class="code-line" id="line21">    bubbleSort(arr, n);</div>
+                <div class="code-line" id="line22">    </div>
+                <div class="code-line" id="line23">    cout << "Sorted array: ";</div>
+                <div class="code-line" id="line24">    for (int i = 0; i < n; i++) {</div>
+                <div class="code-line" id="line25">        cout << arr[i] << " ";</div>
+                <div class="code-line" id="line26">    }</div>
+                <div class="code-line" id="line27">    return 0;</div>
+                <div class="code-line" id="line28">}</div>
+            </div>
+            
+            <div class="explanation" id="explanation">
+                <p>Welcome! This animation will demonstrate how the Bubble Sort algorithm works.</p>
+                <p>Click "Next Step" to begin the animation.</p>
+            </div>
+            
+            <div class="speed-control">
+                <span>Animation Speed:</span>
+                <input type="range" id="speedSlider" min="100" max="2000" value="800">
+            </div>
+            
+            <div class="controls">
+                <button id="prevBtn" disabled>Previous Step</button>
+                <button id="nextBtn">Next Step</button>
+                <button id="resetBtn">Reset</button>
+                <button id="autoBtn">Auto Run</button>
+            </div>
+            
+            <div class="algorithm-info">
+                <h3>Bubble Sort Algorithm Overview</h3>
+                <p>Bubble Sort is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted.</p>
+                
+                <div class="complexity">
+                    <div class="complexity-item">
+                        <div>Time Complexity (Best)</div>
+                        <div class="complexity-value">O(n)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div>Time Complexity (Average)</div>
+                        <div class="complexity-value">O(n²)</div>
+                    </div>
+                    <div class="complexity-item">
+                        <div>Time Complexity (Worst)</div>
+                        <div class="complexity-value">O(n²)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial array for demonstration
+            const initialArray = [64, 34, 25, 12, 22, 11, 90];
+            let array = [...initialArray];
+            let n = array.length;
+            let i = 0;
+            let j = 0;
+            let isSwapping = false;
+            let tempValue;
+            let currentStep = 0;
+            let animationSpeed = 800;
+            let autoInterval = null;
+            
+            const arrayDisplay = document.getElementById('arrayDisplay');
+            const explanation = document.getElementById('explanation');
+            const speedSlider = document.getElementById('speedSlider');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const autoBtn = document.getElementById('autoBtn');
+            
+            // Initialize the array display
+            function initializeArray() {
+                arrayDisplay.innerHTML = '';
+                array.forEach((value, index) => {
+                    const element = document.createElement('div');
+                    element.className = 'array-element';
+                    element.textContent = value;
+                    element.id = `element-${index}`;
+                    arrayDisplay.appendChild(element);
+                });
+            }
+            
+            // Update code highlighting
+            function highlightCodeLine(lineNumber) {
+                // Remove active class from all lines
+                document.querySelectorAll('.code-line').forEach(line => {
+                    line.classList.remove('active');
+                });
+                
+                // Add active class to current line
+                const currentLine = document.getElementById(`line${lineNumber}`);
+                if (currentLine) {
+                    currentLine.classList.add('active');
+                    currentLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            // Update explanation text
+            function updateExplanation(step) {
+                const explanations = [
+                    "Starting Bubble Sort algorithm. We'll sort the array in ascending order.",
+                    "Entering the outer loop. This controls the number of passes through the array.",
+                    "Entering the inner loop. This will compare adjacent elements.",
+                    "Comparing two adjacent elements to see if they are in the wrong order.",
+                    `Comparing ${array[j]} and ${array[j+1]}. Since ${array[j]} > ${array[j+1]}, they need to be swapped.`,
+                    `Comparing ${array[j]} and ${array[j+1]}. They are in correct order, no swap needed.`,
+                    "Swapping the two elements because they are in the wrong order.",
+                    "Moving to the next pair of elements in the inner loop.",
+                    "Inner loop completed. The largest element has bubbled to the end.",
+                    "Starting a new pass through the array with the outer loop.",
+                    "Array is now completely sorted!",
+                    "Returning to main function to print the sorted array."
+                ];
+                
+                if (step < explanations.length) {
+                    explanation.innerHTML = `<p>${explanations[step]}</p>`;
+                }
+            }
+            
+            // Update the visual state of the array
+            function updateArrayVisualization() {
+                // Reset all elements
+                for (let idx = 0; idx < n; idx++) {
+                    const element = document.getElementById(`element-${idx}`);
+                    element.classList.remove('comparing', 'swapping', 'sorted');
+                    
+                    // Mark sorted elements
+                    if (idx >= n - i) {
+                        element.classList.add('sorted');
+                    }
+                }
+                
+                // Highlight current comparing elements
+                if (j < n - i - 1) {
+                    document.getElementById(`element-${j}`).classList.add('comparing');
+                    document.getElementById(`element-${j+1}`).classList.add('comparing');
+                }
+                
+                // If swapping, highlight accordingly
+                if (isSwapping) {
+                    document.getElementById(`element-${j}`).classList.add('swapping');
+                    document.getElementById(`element-${j+1}`).classList.add('swapping');
+                }
+            }
+            
+            // Perform next step of the algorithm
+            function nextStep() {
+                if (i < n - 1) {
+                    if (!isSwapping) {
+                        highlightCodeLine(6);
+                        updateExplanation(2);
+                        
+                        if (j < n - i - 1) {
+                            highlightCodeLine(7);
+                            
+                            if (array[j] > array[j + 1]) {
+                                updateExplanation(4);
+                                isSwapping = true;
+                                highlightCodeLine(9);
+                                updateExplanation(6);
+                                
+                                // Store value for swapping visualization
+                                tempValue = array[j];
+                            } else {
+                                updateExplanation(5);
+                                j++;
+                            }
+                        } else {
+                            // End of inner loop
+                            j = 0;
+                            i++;
+                            highlightCodeLine(5);
+                            updateExplanation(8);
+                            
+                            if (i >= n - 1) {
+                                updateExplanation(10);
+                                highlightCodeLine(15);
+                                nextBtn.disabled = true;
+                                autoBtn.disabled = true;
+                            }
+                        }
+                    } else {
+                        // Perform the swap
+                        [array[j], array[j+1]] = [array[j+1], array[j]];
+                        
+                        highlightCodeLine(10);
+                        updateExplanation(6);
+                        
+                        // Update visualization after swap
+                        document.getElementById(`element-${j}`).textContent = array[j];
+                        document.getElementById(`element-${j+1}`).textContent = array[j+1];
+                        
+                        isSwapping = false;
+                        j++;
+                        highlightCodeLine(6);
+                    }
+                } else {
+                    updateExplanation(10);
+                    highlightCodeLine(15);
+                    nextBtn.disabled = true;
+                    autoBtn.disabled = true;
+                }
+                
+                updateArrayVisualization();
+                currentStep++;
+                prevBtn.disabled = false;
+            }
+            
+            // Reset the animation
+            function resetAnimation() {
+                array = [...initialArray];
+                i = 0;
+                j = 0;
+                isSwapping = false;
+                currentStep = 0;
+                
+                initializeArray();
+                document.querySelectorAll('.code-line').forEach(line => {
+                    line.classList.remove('active');
+                });
+                
+                updateExplanation(0);
+                prevBtn.disabled = true;
+                nextBtn.disabled = false;
+                autoBtn.disabled = false;
+                
+                // Clear auto interval if running
+                if (autoInterval) {
+                    clearInterval(autoInterval);
+                    autoInterval = null;
+                    autoBtn.textContent = "Auto Run";
+                }
+            }
+            
+            // Toggle auto run
+            function toggleAutoRun() {
+                if (autoInterval) {
+                    clearInterval(autoInterval);
+                    autoInterval = null;
+                    autoBtn.textContent = "Auto Run";
+                } else {
+                    autoBtn.textContent = "Pause";
+                    autoInterval = setInterval(() => {
+                        if (i < n - 1 || j < n - i - 1) {
+                            nextStep();
+                        } else {
+                            clearInterval(autoInterval);
+                            autoInterval = null;
+                            autoBtn.textContent = "Auto Run";
+                        }
+                    }, animationSpeed);
+                }
+            }
+            
+            // Event listeners
+            nextBtn.addEventListener('click', nextStep);
+            
+            prevBtn.addEventListener('click', function() {
+                // For simplicity, we'll just reset and step through to currentStep-1
+                // A more complete implementation would track history
+                alert("For a complete implementation, we would need to track each step's state. This demo focuses on forward animation.");
+            });
+            
+            resetBtn.addEventListener('click', resetAnimation);
+            
+            autoBtn.addEventListener('click', toggleAutoRun);
+            
+            speedSlider.addEventListener('input', function() {
+                animationSpeed = 2100 - this.value;
+                
+                if (autoInterval) {
+                    clearInterval(autoInterval);
+                    autoInterval = setInterval(() => {
+                        if (i < n - 1 || j < n - i - 1) {
+                            nextStep();
+                        } else {
+                            clearInterval(autoInterval);
+                            autoInterval = null;
+                            autoBtn.textContent = "Auto Run";
+                        }
+                    }, animationSpeed);
+                }
+            });
+            
+            // Initialize the animation
+            initializeArray();
+            highlightCodeLine(4);
+            updateExplanation(0);
+        });
+    </script>
+</body>
+</html>
